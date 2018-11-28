@@ -1,0 +1,87 @@
+<div class="container" *ngIf="!isCadastrando">
+  <br/>
+  <div style="text-align:center">
+    <img style="text-align:center" src="../assets/images/agenda.png" width="100px" height="100px">
+  </div>
+  <h1 style="text-align:center">Health Care</h1>
+  <br/>
+  <br/>
+  <br/>
+  <div *ngIf="boAlertMessage" class="alert alert-success" role="alert">{{alertMessage}}</div>
+  <p style="text-align:center">
+    <mat-form-field class="fullwidth">
+      <input matInput id="username" placeholder="Login" name="login" required maxlength="20"
+             [(ngModel)]="loginData.username" type="text">
+    </mat-form-field>
+  </p>
+  <p style="text-align:center">
+    <mat-form-field class="fullwidth">
+      <input matInput placeholder="Password" id="password" [(ngModel)]="loginData.password" type="password" name="password"
+             minlength="5" maxlength="50" required>
+    </mat-form-field>
+  </p>
+
+  <p style="text-align:center">
+    <button mat-raised-button color="primary" type="submit"
+            (click)="login()">Login
+    </button>
+
+    <button mat-raised-button color="success" type="button"
+            (click)="novoUsuarioForm()">Register
+    </button>
+  </p>
+</div>
+
+<form #formUser="ngForm" *ngIf="isCadastrando"
+      (ngSubmit)="saveUser(newUser)">
+  <h2>Register</h2>
+  <br/>
+  <br/>
+  <table class="fullwidth" style="cellspacing:0">
+    <tr>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input matInput id="login" placeholder="Login" name="login" required minlength="6" maxlength="20"
+                 [(ngModel)]="newUser.login" #login="ngModel" type="text"
+          >
+        </mat-form-field>
+        <div *ngIf="login.invalid && (login.dirty || login.touched)">
+          <mat-error *ngIf="login.errors.required">Login is required.</mat-error>
+          <mat-error *ngIf="login.errors.minlength">Login must have at least 6 length.
+          </mat-error>
+        </div>
+      </td>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input matInput placeholder="Password" id="pass" [(ngModel)]="newUser.password" type="password" name="pass"
+                 minlength="5" maxlength="50" required #pass="ngModel">
+        </mat-form-field>
+        <div *ngIf="pass.invalid && (pass.dirty || pass.touched)">
+          <mat-error *ngIf="pass.errors.required">Password is required.</mat-error>
+          <mat-error *ngIf="pass.errors.minlength">Password must have at least 6 length.</mat-error>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+
+    <mat-form-field class="fullwidth">
+      <input matInput placeholder="E-mail" id="email" [(ngModel)]="newUser.email" name="email" maxlength="100"
+             #email="ngModel" required/>
+    </mat-form-field>
+    <div *ngIf="email.invalid && (email.dirty || email.touched)">
+      <mat-error *ngIf="email.errors.required">E-mail is required.</mat-error>
+      <mat-error *ngIf="email.errors.email">Invalid e-mail.</mat-error>
+    </div>
+
+  <div class="panel-footer">
+    <button mat-raised-button color="primary" type="submit"
+            [disabled]="!formUser.form.valid">
+      Save
+      <i class="fa fa-save"></i>
+    </button>
+    <button mat-raised-button type="button"
+            (click)=cancelarCadastroUsuario()>Back
+    </button>
+  </div>
+</form>
