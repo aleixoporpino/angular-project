@@ -53,8 +53,7 @@ patient.usuario = new User();
   public findAll(): Observable<Array<Patient>> {
     this.appService.checkCredentials();
     const headers = new HttpHeaders({
-      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
-      'Authorization': 'Bearer ' + this.cookieService.get('access_token')
+      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
     });
     return this.httpClient.get(this.URL + '/', {headers: headers})
       .map((res: Response) => res)

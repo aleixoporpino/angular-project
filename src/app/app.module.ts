@@ -9,6 +9,8 @@ import {NgxMaskModule} from 'ngx-mask';
 // import 'hammerjs';
 
 import {AppComponent} from './app.component';
+import {AuthGuard} from './auth/auth.guard';
+import {AuthService} from './auth/auth.service';
 import {RegisterUserService} from './usuarios/register-user.service';
 import {UserService} from './usuarios/user.service';
 import {ContatoService} from './contatos/contato.service';
@@ -57,8 +59,8 @@ import {PatientsComponent} from './patients/patients.component';
 
 
 const appRoutes: Routes = [
-  {path: 'contato', component: TemplateContatoComponent},
-  {path: 'patient', component: PatientsComponent},
+  {path: 'contato', component: TemplateContatoComponent, canActivate: [AuthGuard]},
+  {path: 'patient', component: PatientsComponent, canActivate: [AuthGuard]},
   {path: 'login', component: TemplateLoginComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full'}
 
@@ -112,7 +114,7 @@ const appRoutes: Routes = [
     MatTooltipModule,
     NgxMaskModule.forRoot()
   ],
-  providers: [RegisterUserService, UserService, ContatoService, PatientService, Globals, CookieService, AppService],
+  providers: [AuthGuard, AuthService, RegisterUserService, UserService, ContatoService, PatientService, Globals, CookieService, AppService],
   bootstrap: [AppComponent]
   ,
   exports: [

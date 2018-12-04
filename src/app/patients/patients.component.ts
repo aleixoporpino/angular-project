@@ -9,7 +9,7 @@ import {User} from '../models/user.model';
 import {Operacao} from '../enums/operacao';
 /*import {ContatoService} from '../patients/patient.service';*/
 import {AppService} from '../app.service';
-import {PatientService} from '../patients/patient.service';
+import {PatientService} from './patient.service';
 
 @Component({
   selector: 'app-patients',
@@ -82,9 +82,6 @@ export class PatientsComponent implements OnInit {
   }
 
   savePatient(patient: Patient) {
-    /*const datePipe = new DatePipe('en-US');
-    patient.dataNascimento = datePipe.transform(patient.dataNascimento, 'dd/MM/yyyy');*/
-    console.log(patient);
     if (this.operacao === Operacao.CADASTRANDO) {
       this.patientService
         .save(patient)
