@@ -21,13 +21,13 @@ export class RegisterUserService {
         this.URL = globals.PUBLIC_URL + this.URL;
     }
 
-    private handleError(error: Response | any) {
+    private static handleError(error: Response | any) {
         console.error('ApiService::handleError', error);
         return Observable.throw(error);
     }
 
     public salvar(user: User): Observable<HttpReturnMessage> {
-        return this.httpClient.post<HttpReturnMessage>(this.URL + '/salvar', user)
-            .catch(this.handleError);
+        return this.httpClient.post<HttpReturnMessage>(this.URL + '/save', user)
+            .catch(RegisterUserService.handleError);
     }
 }

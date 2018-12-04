@@ -1,7 +1,7 @@
 <div class="container" *ngIf="!isCadastrando">
   <br/>
   <div style="text-align:center">
-    <img style="text-align:center" src="../assets/images/agenda.png" width="100px" height="100px">
+    <img style="text-align:center" src="../assets/images/hospital.png" width="100px" height="100px">
   </div>
   <h1 style="text-align:center">Health Care</h1>
   <br/>
@@ -53,7 +53,7 @@
       </td>
       <td>
         <mat-form-field class="fullwidth">
-          <input matInput placeholder="Password" id="pass" [(ngModel)]="newUser.password" type="password" name="pass"
+          <input matInput placeholder="Password" id="pass" [(ngModel)]="newUser.senha" type="password" name="pass"
                  minlength="5" maxlength="50" required #pass="ngModel">
         </mat-form-field>
         <div *ngIf="pass.invalid && (pass.dirty || pass.touched)">

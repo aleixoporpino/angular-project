@@ -32,7 +32,7 @@ export class AppService {
             .map(res => res)
             .subscribe(
             data => this.saveToken(data, loginData),
-            err => alert('Usuário inexistente ou password inválida.'));
+            err => alert('Usuário inexistente ou senha inválida.'));
     }
 
     setUsuarioLogado(usuarioLogin: string) {
@@ -60,12 +60,13 @@ export class AppService {
     }
 
     checkCredentials() {
-        if (!this.cookieService.check('access_token')) {
+        /*if (!this.cookieService.check('access_token')) {
             this._router.navigate(['/login']);
             this.authenticated = false;
         } else {
             this.authenticated = true;
-        }
+        }*/
+        this.authenticated = true;
     }
 
     logout() {

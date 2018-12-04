@@ -20,7 +20,7 @@ export class UserService {
     constructor(
         protected httpClient: HttpClient, private cookieService: CookieService, private globals: Globals
     ) {
-        this.URL = this.globals.PRIVATE_URL + 'usuario';
+        this.URL = this.globals.PRIVATE_URL + 'user';
     }
 
     private handleError(error: Response | any) {
@@ -34,7 +34,7 @@ export class UserService {
             'Authorization': 'Bearer ' + this.cookieService.get('access_token')
         });
 
-        return this.httpClient.get(this.URL + '/porlogin/' + login, { headers: headers })
+        return this.httpClient.get(this.URL + '/login/' + login, { headers: headers })
             .map((res: Response) => res)
             .catch((error: any) => Observable.throw(error || 'Server error'));
     }
