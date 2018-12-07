@@ -40,10 +40,10 @@ export class AppService {
   }
 
   setUsuarioLogado(usuarioLogin: string) {
-    this.usuarioService.buscarPorLogin(usuarioLogin).subscribe(usuario => {
+    /*this.usuarioService.buscarPorLogin(usuarioLogin).subscribe(usuario => {
       this.cookieService.set('id', usuario.id + '');
       this._router.navigate(['/contato']);
-    });
+    });*/
   }
 
   saveToken(token, loginData: any) {
