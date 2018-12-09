@@ -11,6 +11,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
 import {User} from '../models/user.model';
+import {Patient} from '../models/patient.model';
 
 @Injectable()
 export class UserService {
@@ -34,6 +35,17 @@ export class UserService {
     });
 
     return this.httpClient.get(this.URL + '/login/' + login + '/' + password, {headers: headers})
+      .map((res: Response) => res)
+      .catch((error: any) => Observable.throw(error || 'Server error'));
+  }
+
+  public findAllDoctors(): Observable<Array<User>> {
+    console.log(this.cookieService.get('access_token'));
+    const headers = new HttpHeaders({
+      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+    });
+
+    return this.httpClient.get(this.URL + '/doctors', {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }

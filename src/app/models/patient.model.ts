@@ -9,6 +9,6 @@ export class Patient {
   roomNumber: number;
   emergencyNumber: string;
   department: string;
-  doctor: string;
-  /*user: User;*/
+  doctor: User;
+  nurse?: User;
 }

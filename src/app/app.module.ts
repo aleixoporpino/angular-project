@@ -13,10 +13,9 @@ import {AuthGuard} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {RegisterUserService} from './usuarios/register-user.service';
 import {UserService} from './usuarios/user.service';
-import {ContatoService} from './contatos/contato.service';
 import {PatientService} from './patients/patient.service';
+import {RecordsService} from './records/records.service';
 import {AppService} from './app.service';
-import {TemplateContatoComponent} from './contatos/template-contato.component';
 import {TemplateLoginComponent} from './login/template-login.component';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {Globals} from './globals';
@@ -56,10 +55,10 @@ import {
 } from '@angular/material';
 import {CdkTableModule} from '@angular/cdk/table';
 import {PatientsComponent} from './patients/patients.component';
+import {RecordsComponent} from './records/records.component';
 
 
 const appRoutes: Routes = [
-  {path: 'contato', component: TemplateContatoComponent, canActivate: [AuthGuard]},
   {path: 'patient', component: PatientsComponent, canActivate: [AuthGuard]},
   {path: 'login', component: TemplateLoginComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full'}
@@ -70,9 +69,9 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    TemplateContatoComponent,
     TemplateLoginComponent,
     PatientsComponent,
+    RecordsComponent,
   ],
   imports: [
     BrowserModule,
@@ -114,7 +113,7 @@ const appRoutes: Routes = [
     MatTooltipModule,
     NgxMaskModule.forRoot()
   ],
-  providers: [AuthGuard, AuthService, RegisterUserService, UserService, ContatoService, PatientService, Globals, CookieService, AppService],
+  providers: [AuthGuard, AuthService, RegisterUserService, UserService, PatientService, Globals, CookieService, AppService, RecordsService],
   bootstrap: [AppComponent]
   ,
   exports: [

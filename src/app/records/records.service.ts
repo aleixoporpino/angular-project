@@ -5,17 +5,15 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
-
-import {Patient} from '../models/patient.model';
-import {User} from '../models/user.model';
+import {Record} from '../models/record.model';
 import {HttpReturnMessage} from '../models/httpreturnmessage.model';
 import {Globals} from '../globals';
 import {AppService} from '../app.service';
 
 @Injectable()
-export class PatientService {
+export class RecordsService {
 
-  private URL = 'patients';
+  private URL = 'records';
 
   constructor(
     protected httpClient: HttpClient, private globals: Globals,
@@ -24,61 +22,44 @@ export class PatientService {
     this.URL = globals.PRIVATE_URL + this.URL;
   }
 
-  public save(patient: Patient): Observable<HttpReturnMessage> {
+  public save(record: Record): Observable<HttpReturnMessage> {
     this.appService.checkCredentials();
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.cookieService.get('access_token')
     });
 
-    patient.doctor = new User();
-    patient.doctor.id = +this.cookieService.get('userId');
-
-    return this.httpClient.post(this.URL + '/', patient, {headers: headers})
+    return this.httpClient.post(this.URL + '/', record, {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(error || 'Server error'));
 
   }
 
-  public delete(patient: Patient): Observable<HttpReturnMessage> {
+  public delete(record: Record): Observable<HttpReturnMessage> {
     this.appService.checkCredentials();
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.cookieService.get('access_token')
     });
-    return this.httpClient.delete(this.URL + '/' + patient.id, {headers: headers})
+    return this.httpClient.delete(this.URL + '/' + record.id, {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }
 
-  public findDoctorId(): Observable<Array<Patient>> {
+  public findByPatientId(patientId: number): Observable<Array<Record>> {
     this.appService.checkCredentials();
     const headers = new HttpHeaders({
       'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
     });
-    return this.httpClient.get(this.URL + '/doctor/' + this.cookieService.get('userId'), {headers: headers})
+    return this.httpClient.get(this.URL + '/patient/' + patientId, {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }
 
-  public findByName(name: String): Observable<Array<Patient>> {
-    this.appService.checkCredentials();
-    const headers = new HttpHeaders({
-      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
-      'Authorization': 'Bearer ' + this.cookieService.get('access_token')
-    });
-
-    return this.httpClient.get(this.URL + '/name/' + name + '/' + this.cookieService.get('userId'), {headers: headers})
-      .map((res: Response) => res)
-      .catch((error: any) => Observable.throw(error || 'Server error'));
-
-  }
-
-  public update(patient: Patient): Observable<HttpReturnMessage> {
+  public update(record: Record): Observable<HttpReturnMessage> {
     this.appService.checkCredentials();
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.cookieService.get('access_token')
     });
-    console.log(patient);
-    return this.httpClient.put(this.URL + '/' + patient.id, patient, {headers: headers})
+    return this.httpClient.put(this.URL, record, {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(alert('Error, contact the system administrator.') || error));
   }

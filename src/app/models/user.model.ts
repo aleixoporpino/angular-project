@@ -3,4 +3,8 @@ export class User {
     login: string;
     password: string;
     email: string;
+    beep: string;
+    department: string;
+    name: string;
+    type: string;
 }

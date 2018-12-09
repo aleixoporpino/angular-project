@@ -19,7 +19,7 @@
 <br/>
 <br/>
 <div *ngIf="boAlertMessage" class="alert alert-success" role="alert">{{alertMessage}}</div>
-<mat-card *ngIf="operacao === 'LISTANDO'">
+<mat-card *ngIf="operacao === 'LISTING'">
   <div class="container">
     <mat-card-header>
       <mat-card-title>
@@ -59,7 +59,7 @@
           <td hidden="true">{{patient.id}}</td>
           <td>{{patient.firstName}}  {{patient.lastName}}</td>
           <td>{{patient.age}}</td>
-          <td>{{patient.doctor}}</td>
+          <td>{{patient.doctor.name}}</td>
           <td>{{patient.roomNumber}}</td>
           <td class="text-center" style="max-width:14%;width:14%">
             <button mat-icon-button color="primary" (click)="viewPatientForm(patient)">
@@ -92,30 +92,31 @@
 </mat-card>
 
 <form class="formWidth" #formPatient="ngForm"
-      *ngIf="operacao === 'CADASTRANDO' || operacao === 'VISUALIZANDO' || operacao === 'EDITANDO'">
+      *ngIf="operacao === 'ADDING' || operacao === 'VIEWING' || operacao === 'UPDATING'">
   <mat-card>
     <mat-card-header>
       <mat-card-title><h3>Patient</h3></mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <input id="id" [(ngModel)]="newPatient.id" name="id" hidden="true"/>
+      <input id="id" [(ngModel)]="patient.id" name="id" hidden="true"/>
       <table class="fullwidth" cellspacing="0">
         <tr>
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="First name" id="firstName" [(ngModel)]="newPatient.firstName"
+              <input matInput placeholder="First name" id="firstName" [(ngModel)]="patient.firstName"
                      name="firstName"
-                     [disabled]="operacao === 'VISUALIZANDO'"
+                     [disabled]="operacao === 'VIEWING'"
                      required maxlength="50" #firstName="ngModel">
             </mat-form-field>
             <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)">
-              <mat-error *ngIf="firstName.errors.required">First name is required.</mat-error>
+              <mat-error *ngIf="firstName.errors.required">First name is required.
+              </mat-error>
             </div>
           </td>
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Last name" id="lastName" [(ngModel)]="newPatient.lastName" name="lastName"
-                     [disabled]="operacao === 'VISUALIZANDO'" required
+              <input matInput placeholder="Last name" id="lastName" [(ngModel)]="patient.lastName" name="lastName"
+                     [disabled]="operacao === 'VIEWING'" required
                      #lastName="ngModel" maxlength="50">
             </mat-form-field>
             <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
@@ -124,8 +125,8 @@
           </td>
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Age" id="age" [(ngModel)]="newPatient.age" name="age"
-                     [disabled]="operacao === 'VISUALIZANDO'" required type="number"
+              <input matInput placeholder="Age" id="age" [(ngModel)]="patient.age" name="age"
+                     [disabled]="operacao === 'VIEWING'" required type="number"
                      #age="ngModel" maxlength="3">
             </mat-form-field>
             <div *ngIf="age.invalid && (age.dirty || age.touched)">
@@ -137,8 +138,8 @@
 
       <p>
         <mat-form-field class="fullwidth">
-      <textarea matInput placeholder="Address" id="address" [(ngModel)]="newPatient.address" name="address"
-                maxlength="200" [disabled]="operacao === 'VISUALIZANDO'" #address="ngModel"
+      <textarea matInput placeholder="Address" id="address" [(ngModel)]="patient.address" name="address"
+                maxlength="200" [disabled]="operacao === 'VIEWING'" #address="ngModel"
                 required
       ></textarea>
           <div *ngIf="address.invalid && (address.dirty || address.touched)">
@@ -153,8 +154,8 @@
           <td>
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Emergency number" mask="000 000-0000" id="emergencyNumber"
-                     [(ngModel)]="newPatient.emergencyNumber"
-                     name="emergencyNumber" [disabled]="operacao === 'VISUALIZANDO'"
+                     [(ngModel)]="patient.emergencyNumber"
+                     name="emergencyNumber" [disabled]="operacao === 'VIEWING'"
                      maxlength="12" required #emergencyNumber="ngModel">
             </mat-form-field>
             <div *ngIf="emergencyNumber.invalid && (emergencyNumber.dirty || emergencyNumber.touched)">
@@ -163,8 +164,8 @@
           </td>
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Room number" id="roomNumber" [(ngModel)]="newPatient.roomNumber"
-                     name="roomNumber" [disabled]="operacao === 'VISUALIZANDO' "
+              <input matInput placeholder="Room number" id="roomNumber" [(ngModel)]="patient.roomNumber"
+                     name="roomNumber" [disabled]="operacao === 'VIEWING' "
                      maxlength="10" required #roomNumber="ngModel">
             </mat-form-field>
             <div *ngIf="roomNumber.invalid && (roomNumber.dirty || roomNumber.touched)">
@@ -174,8 +175,9 @@
 
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Department" id="department" [(ngModel)]="newPatient.department"
-                     name="department" [disabled]="operacao === 'VISUALIZANDO'"
+              <input matInput placeholder="Department" id="department"
+                     [(ngModel)]="patient.department"
+                     name="department" [disabled]="operacao === 'VIEWING'"
                      maxlength="200" required #department="ngModel">
             </mat-form-field>
             <div *ngIf="department.invalid && (department.dirty || department.touched)">
@@ -184,13 +186,17 @@
           </td>
           <td>
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Doctor name" id="doctor" [(ngModel)]="newPatient.doctor"
-                     name="doctor" [disabled]="operacao === 'VISUALIZANDO'"
-                     maxlength="200" required #doctor="ngModel">
+              <mat-select id="doctor" placeholder="Doctor" required name="doctor"
+                          [disabled]="operacao === 'VIEWING'"
+                          [(ngModel)]="patient.doctor.id" #doctor="ngModel">
+                <mat-option *ngFor="let doc of doctors" [value]="doc.id">
+                  {{doc.name}}
+                </mat-option>
+              </mat-select>
+              <div *ngIf="doctor.invalid && (doctor.dirty || doctor.touched)">
+                <mat-error *ngIf="doctor.errors.required">Doctor is required.</mat-error>
+              </div>
             </mat-form-field>
-            <div *ngIf="doctor.invalid && (doctor.dirty || doctor.touched)">
-              <mat-error *ngIf="doctor.errors.required">Doctor is required.</mat-error>
-            </div>
           </td>
         </tr>
       </table>
@@ -199,8 +205,12 @@
       <div class="panel-footer">
         <p>
           <button type="button" mat-raised-button color="primary" (click)="savePatient(formPatient.value)"
-                  [disabled]="!formPatient.form.valid || operacao === 'VISUALIZANDO'">
+                  [disabled]="!formPatient.form.valid || operacao === 'VIEWING'">
             Save
+          </button>
+          <button mat-raised-button color="primary" (click)="addNewRecord()"
+                  *ngIf="operacao === 'VIEWING' || operacao === 'UPDATING'">
+            Add new record
           </button>
           <button mat-raised-button (click)="cancelFormPatient()">
             Cancel
@@ -210,4 +220,8 @@
     </mat-card-footer>
   </mat-card>
 </form>
+
+<app-records *ngIf="operacao === 'VIEWING' || operacao === 'UPDATING'" [patient]="patient"
+[addingNewRecord]="addingNewRecord">
+</app-records>
 

@@ -1,13 +1,12 @@
-import {Component, OnInit, AfterViewInit, Pipe, PipeTransform, Inject} from '@angular/core';
-import {FormControl, FormGroup, FormGroupDirective, NgForm, Validators} from '@angular/forms';
-import {DatePipe} from '@angular/common';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {CookieService} from 'ngx-cookie-service';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import {Patient} from '../models/patient.model';
 import {User} from '../models/user.model';
-import {Operacao} from '../enums/operacao';
-/*import {ContatoService} from '../patients/patient.service';*/
+import {CrudOperation} from '../enums/crudOperation';
+import {UserService} from '../usuarios/user.service';
 import {AppService} from '../app.service';
 import {PatientService} from './patient.service';
 
@@ -18,33 +17,43 @@ import {PatientService} from './patient.service';
 })
 export class PatientsComponent implements OnInit {
   patients: Patient[] = [];
+  doctors: User[] = [];
 
   searchName: String = '';
 
   alertMessage: String = '';
   boAlertMessage = false;
-  confirmacaoExclusao = false;
+  addingNewRecord: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  operacao: Operacao = Operacao.LISTANDO;
+  operacao: CrudOperation = CrudOperation.LISTING;
 
-  newPatient: any = {};
+  patient: Patient = new Patient();
 
-  constructor(private patientService: PatientService, private appService: AppService,
+  constructor(private patientService: PatientService, private userService: UserService,
+              private appService: AppService,
               private cookieService: CookieService, public dialog: MatDialog) {
   }
 
   ngOnAfterViewInit() {
     this.listPatients();
+    this.listAllDoctors();
   }
 
   ngOnInit() {
     this.appService.checkCredentials();
     this.listPatients();
+    this.listAllDoctors();
   }
 
   listPatients() {
-    this.patientService.findAll().subscribe(patients => {
+    this.patientService.findDoctorId().subscribe(patients => {
       this.patients = patients;
+    });
+  }
+
+  listAllDoctors() {
+    this.userService.findAllDoctors().subscribe(doctors => {
+      this.doctors = doctors;
     });
   }
 
@@ -61,35 +70,36 @@ export class PatientsComponent implements OnInit {
   newPatientForm(contato: Patient) {
     // Reseta o form se for editado um contato
     if (this.patients.length) {
-      this.newPatient = {};
+      this.patient = new Patient();
+      this.patient.doctor = new User();
     }
-    this.operacao = Operacao.CADASTRANDO;
+    this.operacao = CrudOperation.ADDING;
   }
 
   editPatientForm(patient: Patient) {
     if (!patient) {
-      this.operacao = Operacao.LISTANDO;
+      this.operacao = CrudOperation.LISTING;
       return;
     }
-    this.operacao = Operacao.EDITANDO;
-    this.newPatient = new Patient();
-    this.newPatient = patient;
+    this.operacao = CrudOperation.UPDATING;
+    this.patient = new Patient();
+    this.patient = patient;
   }
 
   viewPatientForm(patient: Patient) {
-    this.operacao = Operacao.VISUALIZANDO;
-    this.newPatient = patient;
+    this.operacao = CrudOperation.VIEWING;
+    this.patient = patient;
   }
 
   savePatient(patient: Patient) {
-    if (this.operacao === Operacao.CADASTRANDO) {
+    if (this.operacao === CrudOperation.ADDING) {
       this.patientService
         .save(patient)
         .subscribe((res) => {
           if (res.codigoErro === 0) {
             this.listPatients();
-            this.operacao = Operacao.LISTANDO;
-            this.newPatient = patient;
+            this.operacao = CrudOperation.LISTING;
+            this.patient = patient;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
           } else {
@@ -102,8 +112,8 @@ export class PatientsComponent implements OnInit {
         .subscribe((res) => {
           if (res.codigoErro === 0) {
             this.listPatients();
-            this.operacao = Operacao.LISTANDO;
-            this.newPatient = patient;
+            this.operacao = CrudOperation.LISTING;
+            this.patient = patient;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
           } else {
@@ -120,7 +130,7 @@ export class PatientsComponent implements OnInit {
       .subscribe((res) => {
         if (res.codigoErro === 0) {
           this.listPatients();
-          this.operacao = Operacao.LISTANDO;
+          this.operacao = CrudOperation.LISTING;
           this.boAlertMessage = true;
           this.alertMessage = res.mensagem;
         } else {
@@ -130,9 +140,15 @@ export class PatientsComponent implements OnInit {
 
   }
 
+  addNewRecord() {
+    console.log('here i am');
+    this.addingNewRecord.next(true);
+  }
+
   cancelFormPatient() {
-    this.operacao = Operacao.LISTANDO;
+    this.operacao = CrudOperation.LISTING;
     this.listPatients();
+    this.addingNewRecord.next(false);
   }
 
 }

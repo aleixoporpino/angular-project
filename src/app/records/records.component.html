@@ -1,0 +1,23 @@
+<form class="formWidth" #formRecord="ngForm" *ngIf="(records != null && records.length > 0) ||
+                                                    addingNewRecord.value">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><h3>Records</h3></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+    </mat-card-content>
+    <mat-card-footer *ngIf="addingNewRecord.value">
+      <div class="panel-footer">
+        <p>
+          <button type="button" mat-raised-button color="primary" (click)="saveRecord(formRecord.value)"
+                  [disabled]="!formRecord.form.valid">
+            Save
+          </button>
+          <button mat-raised-button (click)="cancelFormRecord()">
+            Cancel
+          </button>
+        </p>
+      </div>
+    </mat-card-footer>
+  </mat-card>
+</form>
