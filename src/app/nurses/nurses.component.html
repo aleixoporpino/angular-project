@@ -1,0 +1,191 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #673ab7;">
+  <a class="navbar-brand" href="/patient">
+    <img src="../assets/images/hospital.png" width="30" height="30" class="d-inline-block align-top" alt="">
+    Health Management
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/patient">Patients </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/nurse">Nurses</a>
+      </li>
+    </ul>
+  </div>
+  <form class="form-inline">
+    <div style="color: #fff; text-align: right;padding-right: 10px">
+      <label>Welcome, {{cookieService.get('login')}}.</label>
+    </div>
+    <button type="submit" (click)="appService.logout()" mat-raised-button>
+      Log out
+      <i class="fa fa-sign-out"></i>
+    </button>
+  </form>
+</nav>
+
+<br/>
+<div *ngIf="boAlertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="dismissAlert()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  {{alertMessage}}
+</div>
+<mat-card *ngIf="crudOperation === 'LISTING'">
+  <div class="container">
+    <mat-card-header>
+      <mat-card-title>
+        <h3>Patients</h3>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Search by name" id="searchName"
+                     [(ngModel)]="searchName" name="pesqName" maxlength="50"
+                     (keyup)="findNurseByName(searchName)"/>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-condensed table-bordered table-striped table-hover ">
+        <thead>
+        <tr>
+          <th class="text-center" width="30%">Name</th>
+          <th class="text-center" width="20%">email</th>
+          <th class="text-center" width="10%">beep</th>
+          <th class="text-center" width="10%">Department</th>
+          <th class="text-center" width="10%">Cellphone</th>
+          <th class="text-center" width="20%">#</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let nurse of nurses">
+          <td hidden>{{nurse.id}}</td>
+          <td>{{nurse.name}}</td>
+          <td>{{nurse.email}}</td>
+          <td>{{nurse.beep}}</td>
+          <td>{{nurse.department}}</td>
+          <td>{{nurse.cellphone}}</td>
+          <td class="text-center" style="max-width:14%;width:14%">
+            <button mat-icon-button color="default" (click)="viewNurseForm(nurse)">
+              <mat-icon>
+                <span matTooltip="Details"><i class="fa fa-eye"></i></span>
+              </mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="editNurseForm(nurse)">
+              <mat-icon>
+                <span matTooltip="Edit"><i class="fa fa-edit"></i></span>
+              </mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteNurse(nurse)">
+              <mat-icon>
+                <span matTooltip="Delete"><i class="fa fa-trash"></i></span>
+              </mat-icon>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+    <mat-card-footer>
+      <div class="btn-footer">
+        <button mat-raised-button color="primary" (click)="newNurseForm()">
+          New nurse
+          <i class="fa fa-plus"></i>
+        </button>
+      </div>
+    </mat-card-footer>
+  </div>
+</mat-card>
+
+<form class="formWidth" #formNurse="ngForm"
+      *ngIf="crudOperation === 'ADDING' || crudOperation === 'VIEWING' || crudOperation === 'UPDATING'">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><h3>Nurse</h3></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <input id="id" type="hidden" [(ngModel)]="nurse.id" name="id"/>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Name" id="name" [(ngModel)]="nurse.name"
+                     name="name"
+                     [disabled]="crudOperation === 'VIEWING'"
+                     required maxlength="50" #name="ngModel">
+              <div *ngIf="name.invalid && (name.dirty || name.touched)">
+                <mat-error *ngIf="name.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="E-mail" id="email" [(ngModel)]="nurse.email" name="email"
+                     [disabled]="crudOperation === 'VIEWING'" required
+                     #email="ngModel" maxlength="200">
+
+              <div *ngIf="email.invalid && (email.dirty || email.touched)">
+                <mat-error *ngIf="email.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Beep" id="beep" [(ngModel)]="nurse.beep" name="beep"
+                     [disabled]="crudOperation === 'VIEWING'" required
+                     #beep="ngModel" maxlength="10">
+              <div *ngIf="beep.invalid && (beep.dirty || beep.touched)">
+                <mat-error *ngIf="beep.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-5">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Department" id="department"
+                     [(ngModel)]="nurse.department" type="text"
+                     name="department" [disabled]="crudOperation === 'VIEWING'"
+                     maxlength="200" required #department="ngModel">
+              <div *ngIf="department.invalid && (department.dirty || department.touched)">
+                <mat-error *ngIf="department.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-5">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Cellphone" mask="(000) 000-0000" id="cellphone" [dropSpecialCharacters]="true"
+                     [(ngModel)]="nurse.cellphone"
+                     name="cellphone" [disabled]="crudOperation === 'VIEWING'"
+                     maxlength="18" required #cellphone="ngModel">
+              <div *ngIf="cellphone.invalid && (cellphone.dirty || cellphone.touched)">
+                <mat-error *ngIf="cellphone.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <div class="form-group btn-footer">
+        <button type="button" mat-raised-button color="primary" (click)="saveNurse(formNurse.value)"
+                [disabled]="!formNurse.form.valid || crudOperation === 'VIEWING'">
+          Save
+        </button>
+        <button mat-raised-button (click)="cancelFormNurse()">
+          Cancel
+        </button>
+      </div>
+    </mat-card-footer>
+  </mat-card>
+</form>
+

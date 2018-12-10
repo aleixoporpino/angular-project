@@ -6,6 +6,7 @@ import {Record} from '../models/record.model';
 import {RecordsService} from './records.service';
 import {UserService} from '../usuarios/user.service';
 import {User} from '../models/user.model';
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-records',
@@ -24,6 +25,7 @@ export class RecordsComponent implements OnInit {
 
   alertMessage: String = '';
   boAlertMessage = false;
+  serializedDate: FormControl;
 
   constructor(private recordService: RecordsService, private userService: UserService) {
   }
@@ -46,6 +48,7 @@ export class RecordsComponent implements OnInit {
   }
 
   newRecordForm() {
+    this.boAlertMessage = false;
     this.record = new Record();
     this.record.nurse = new User();
     this.record.patient = this.patient;
@@ -53,6 +56,7 @@ export class RecordsComponent implements OnInit {
   }
 
   editRecordForm(record: Record) {
+    this.boAlertMessage = false;
     if (!record) {
       this.crudOperation = CrudOperation.LISTING;
       return;
@@ -68,14 +72,17 @@ export class RecordsComponent implements OnInit {
   }
 
   viewRecordForm(record: Record) {
+    this.boAlertMessage = false;
     this.crudOperation = CrudOperation.VIEWING;
     if (record.nurse == null) {
       record.nurse = new User();
     }
+    record.date = new Date(record.date);
     this.record = record;
   }
 
   saveRecord(record: Record) {
+    console.log(record.date);
     if (this.crudOperation === CrudOperation.ADDING) {
       record.patient = this.patient;
       this.recordService

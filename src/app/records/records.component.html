@@ -90,10 +90,11 @@
           <div class="row">
             <div class="col-md-4">
               <mat-form-field class="fullwidth">
-                <input matInput placeholder="Date" id="date" [(ngModel)]="record.date"
-                       name="date" type="text"
-                       [disabled]="crudOperation === 'VIEWING'"
-                       required #date="ngModel">
+                <input matInput [matDatepicker]="date" placeholder="Choose a date"
+                       [disabled]="crudOperation === 'VIEWING'" required
+                       [value]="record.date" [(ngModel)]="record.date" name="date">
+                <mat-datepicker-toggle matSuffix [for]="date"></mat-datepicker-toggle>
+                <mat-datepicker #date></mat-datepicker>
                 <div *ngIf="date.invalid && (date.dirty || date.touched)">
                   <mat-error *ngIf="date.errors.required"></mat-error>
                 </div>

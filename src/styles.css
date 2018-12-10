@@ -9,8 +9,8 @@
 
 .formwidth {
   /*width: 500px;*/
-  margin-left:auto;
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 15px;
   border: 1px solid lightgrey;
 }
@@ -38,4 +38,10 @@
 .mat-table {
   overflow: auto;
   max-height: 500px;
+}
+
+.list-card-buttons > button {
+  min-width: 55px;
+  padding: 0 15px;
+  line-height: 30px;
 }

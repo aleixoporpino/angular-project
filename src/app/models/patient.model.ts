@@ -11,4 +11,5 @@ export class Patient {
   department: string;
   doctor: User;
   nurse?: User;
+  gender: string;
 }

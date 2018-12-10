@@ -1,22 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {CookieService} from 'ngx-cookie-service';
 
 import {Patient} from '../models/patient.model';
 import {User} from '../models/user.model';
 import {CrudOperation} from '../enums/crudOperation';
-import {UserService} from '../usuarios/user.service';
+import {NurseService} from './nurse.service';
 import {AppService} from '../app.service';
-import {PatientService} from './patient.service';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
-  selector: 'app-patients',
-  templateUrl: './patients.component.html',
-  styleUrls: ['./patients.component.css']
+  selector: 'app-nurses',
+  templateUrl: './nurses.component.html',
+  styleUrls: ['./nurses.component.css']
 })
-export class PatientsComponent implements OnInit {
-  patients: Patient[] = [];
-  doctors: User[] = [];
+export class NursesComponent implements OnInit {
+  nurses: User[] = [];
 
   searchName: String = '';
 
@@ -25,82 +22,74 @@ export class PatientsComponent implements OnInit {
 
   crudOperation: CrudOperation = CrudOperation.LISTING;
 
-  patient: Patient = new Patient();
+  nurse: User = new User();
 
-  constructor(private patientService: PatientService, private userService: UserService,
-              private appService: AppService,
-              private cookieService: CookieService, public dialog: MatDialog) {
+  constructor(private nurseService: NurseService,
+              private cookieService: CookieService,
+              private appService: AppService) {
   }
 
   ngOnAfterViewInit() {
-    this.listPatients();
-    this.listAllDoctors();
+    this.listAllNurses();
   }
 
   ngOnInit() {
     this.appService.checkCredentials();
-    this.listPatients();
-    this.listAllDoctors();
+    this.listAllNurses();
   }
 
-  listPatients() {
-    this.patientService.findDoctorId().subscribe(patients => {
-      this.patients = patients;
+  listAllNurses() {
+    this.nurseService.findAll().subscribe(nurses => {
+      this.nurses = nurses;
     });
   }
 
-  listAllDoctors() {
-    this.userService.findAllDoctors().subscribe(doctors => {
-      this.doctors = doctors;
-    });
-  }
 
-  findPatientByName(searchName: string) {
+  findNurseByName(searchName: string) {
     if (searchName.length > 0) {
-      this.patientService.findByName(searchName).subscribe(patients => {
-        this.patients = patients;
+      this.nurseService.findByName(searchName).subscribe(nurses => {
+        this.nurses = nurses;
       });
     } else {
-      this.listPatients();
+      this.listAllNurses();
     }
   }
 
-  newPatientForm(contato: Patient) {
+  newNurseForm(contato: Patient) {
     // Reseta o form se for editado um contato
     this.boAlertMessage = false;
-    if (this.patients.length) {
-      this.patient = new Patient();
-      this.patient.doctor = new User();
+    if (this.nurses.length) {
+      this.nurse = new User();
     }
     this.crudOperation = CrudOperation.ADDING;
   }
 
-  editPatientForm(patient: Patient) {
+  editNurseForm(nurse: User) {
     this.boAlertMessage = false;
-    if (!patient) {
+    if (!nurse) {
       this.crudOperation = CrudOperation.LISTING;
       return;
     }
     this.crudOperation = CrudOperation.UPDATING;
-    this.patient = new Patient();
-    this.patient = patient;
+    this.nurse = new User();
+    this.nurse = nurse;
   }
 
-  viewPatientForm(patient: Patient) {
+  viewNurseForm(nurse: User) {
     this.boAlertMessage = false;
     this.crudOperation = CrudOperation.VIEWING;
-    this.patient = patient;
+    this.nurse = nurse;
   }
 
-  savePatient(patient: Patient) {
+  saveNurse(nurse: User) {
     if (this.crudOperation === CrudOperation.ADDING) {
-      this.patientService
-        .save(patient)
+      this.nurseService
+        .save(nurse)
         .subscribe((res) => {
           if (res.codigoErro === 0) {
-            this.listPatients();
+            this.listAllNurses();
             this.crudOperation = CrudOperation.LISTING;
-            this.patient = patient;
+            this.nurse = nurse;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
           } else {
@@ -108,13 +97,13 @@ export class PatientsComponent implements OnInit {
           }
         });
     } else {
-      this.patientService
-        .update(patient)
+      this.nurseService
+        .update(nurse)
         .subscribe((res) => {
           if (res.codigoErro === 0) {
-            this.listPatients();
+            this.listAllNurses();
             this.crudOperation = CrudOperation.LISTING;
-            this.patient = patient;
+            this.nurse = nurse;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
           } else {
@@ -125,12 +114,12 @@ export class PatientsComponent implements OnInit {
 
   }
 
-  deletePatient(patient: Patient) {
-    this.patientService
-      .delete(patient)
+  deleteNurse(nurse: User) {
+    this.nurseService
+      .delete(nurse)
       .subscribe((res) => {
         if (res.codigoErro === 0) {
-          this.listPatients();
+          this.listAllNurses();
           this.crudOperation = CrudOperation.LISTING;
           this.boAlertMessage = true;
           this.alertMessage = res.mensagem;
@@ -141,9 +130,9 @@ export class PatientsComponent implements OnInit {
 
   }
 
-  cancelFormPatient() {
+  cancelFormNurse() {
     this.crudOperation = CrudOperation.LISTING;
-    this.listPatients();
+    this.listAllNurses();
   }
 
   dismissAlert() {

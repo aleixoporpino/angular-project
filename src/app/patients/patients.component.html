@@ -1,22 +1,33 @@
-<form class="navbar-form navbar-right">
-  <img style="text-align:center" src="../assets/images/hospital.png" width="50px" height="50px">
-  <label style="font-size:20px">Health Care</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-  <div class="form-group">
-    <label>Welcome, {{cookieService.get('login')}}.</label>
-  </div>
-  <button type="submit" (click)="appService.logout()" mat-raised-button>
-    Log out
-    <i class="fa fa-sign-out"></i>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #673ab7;">
+  <a class="navbar-brand" href="/patient">
+    <img src="../assets/images/hospital.png" width="30" height="30" class="d-inline-block align-top" alt="">
+    Health Management
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
   </button>
-</form>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/patient">Patients </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/nurse">Nurses</a>
+      </li>
+    </ul>
+  </div>
+  <form class="form-inline">
+    <div style="color: #fff; text-align: right;padding-right: 10px">
+      <label>Welcome, {{cookieService.get('login')}}.</label>
+    </div>
+    <button type="submit" (click)="appService.logout()" mat-raised-button>
+      Log out
+      <i class="fa fa-sign-out"></i>
+    </button>
+  </form>
+</nav>
+
 <br/>
 <div *ngIf="boAlertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
   <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="dismissAlert()">
@@ -32,24 +43,54 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <table class="fullwidth" style="cellspacing:0">
-        <tr>
-          <td>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-12">
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Search by name" id="searchName" [(ngModel)]="searchName" name="pesqNome"
-                     maxlength="50"/>
+              <input matInput placeholder="Search by name" id="searchName"
+                     [(ngModel)]="searchName" name="pesqNome" maxlength="50"
+                     (keyup)="findPatientByName(searchName)"/>
             </mat-form-field>
-          </td>
-          <td>
-            <button type="button" mat-raised-button color="primary" (click)="findPatientByName(searchName)">
-              Search
-              <i class="fa fa-search"></i>
-            </button>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+      </div>
 
-      <table class="table table-condensed table-bordered table-striped table-hover ">
+      <div class="row">
+        <div class="col-lg-6" *ngFor="let patient of patients">
+          <mat-card class="example-card" style="margin-bottom: 20px">
+            <mat-card-header>
+              <div mat-card-avatar class="example-header-image">
+                <img src="{{patient.gender === 'MALE' ? '../assets/images/man.png' : '../assets/images/woman.png'}}"
+                     width="45"/>
+              </div>
+              <mat-card-title><strong>{{patient.lastName}}</strong></mat-card-title>
+              <mat-card-subtitle>{{patient.firstName}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <label style="display: block">Gender: {{patient.gender}}</label>
+              <label style="display: block">Age: {{patient.age}}</label>
+
+              <label style="display: block">Emergency number: {{patient.emergencyNumber | mask: '(000) 000-0000'}}</label>
+              <label style="display: block">Doctor: {{patient.doctor.name}}</label>
+              <label style="display: block">Room number: {{patient.roomNumber}}</label>
+            </mat-card-content>
+            <mat-card-actions style="padding-bottom: 10px" class="list-card-buttons">
+              <button type="button" mat-raised-button color="default" (click)="viewPatientForm(patient)">
+                Details
+              </button>
+              <button type="button" mat-raised-button color="primary" (click)="editPatientForm(patient)">
+                Edit
+              </button>
+              <button type="button" mat-raised-button color="warn" (click)="deletePatient(patient)">
+                Delete
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+
+
+      <table class="table table-condensed table-bordered table-striped table-hover" hidden>
         <thead>
         <tr>
           <th class="text-center" width="40%">Name</th>
@@ -130,7 +171,7 @@
               </div>
             </mat-form-field>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Age" id="age" [(ngModel)]="patient.age" name="age"
                      [disabled]="crudOperation === 'VIEWING'" required type="number"
@@ -138,6 +179,19 @@
 
               <div *ngIf="age.invalid && (age.dirty || age.touched)">
                 <mat-error *ngIf="age.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-2">
+            <mat-form-field class="fullwidth">
+              <mat-select id="gender" placeholder="Gender" required name="gender"
+                          [disabled]="crudOperation === 'VIEWING'"
+                          [(ngModel)]="patient.gender" #gender="ngModel">
+                <mat-option value="FEMALE">FEMALE</mat-option>
+                <mat-option value="MALE">MALE</mat-option>
+              </mat-select>
+              <div *ngIf="gender.invalid && (gender.dirty || gender.touched)">
+                <mat-error *ngIf="gender.errors.required"></mat-error>
               </div>
             </mat-form-field>
           </div>
@@ -157,7 +211,7 @@
         <div class="row">
           <div class="col-md-2">
             <mat-form-field class="fullwidth">
-              <input matInput placeholder="Emergency number" mask="000 000-0000" id="emergencyNumber"
+              <input matInput placeholder="Emergency number" mask="(000) 000-0000" id="emergencyNumber" [dropSpecialCharacters]="true"
                      [(ngModel)]="patient.emergencyNumber"
                      name="emergencyNumber" [disabled]="crudOperation === 'VIEWING'"
                      maxlength="12" required #emergencyNumber="ngModel">
@@ -218,7 +272,7 @@
     </mat-card-footer>
   </mat-card>
 </form>
-
+<br/>
 <app-records *ngIf="crudOperation === 'VIEWING' || crudOperation === 'UPDATING'" [patient]="patient">
 </app-records>
 

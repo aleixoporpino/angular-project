@@ -10,6 +10,7 @@ import {AuthGuard} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {RegisterUserService} from './usuarios/register-user.service';
 import {UserService} from './usuarios/user.service';
+import {NurseService} from './nurses/nurse.service';
 import {PatientService} from './patients/patient.service';
 import {RecordsService} from './records/records.service';
 import {AppService} from './app.service';
@@ -53,11 +54,13 @@ import {
 import {CdkTableModule} from '@angular/cdk/table';
 import {PatientsComponent} from './patients/patients.component';
 import {RecordsComponent} from './records/records.component';
+import {NursesComponent} from './nurses/nurses.component';
 // import 'hammerjs';
 
 
 const appRoutes: Routes = [
   {path: 'patient', component: PatientsComponent, canActivate: [AuthGuard]},
+  {path: 'nurse', component: NursesComponent, canActivate: [AuthGuard]},
   {path: 'login', component: TemplateLoginComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full'}
 
@@ -70,6 +73,7 @@ const appRoutes: Routes = [
     TemplateLoginComponent,
     PatientsComponent,
     RecordsComponent,
+    NursesComponent,
   ],
   imports: [
     BrowserModule,
@@ -111,7 +115,9 @@ const appRoutes: Routes = [
     MatTooltipModule,
     NgxMaskModule.forRoot()
   ],
-  providers: [AuthGuard, AuthService, RegisterUserService, UserService, PatientService, Globals, CookieService, AppService, RecordsService],
+  providers: [AuthGuard, AuthService, RegisterUserService,
+    NurseService, UserService, PatientService, Globals,
+    CookieService, AppService, RecordsService],
   bootstrap: [AppComponent]
   ,
   exports: [
