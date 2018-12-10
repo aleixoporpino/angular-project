@@ -8,8 +8,7 @@ import {NgxMaskModule} from 'ngx-mask';
 import {AppComponent} from './app.component';
 import {AuthGuard} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
-import {RegisterUserService} from './usuarios/register-user.service';
-import {UserService} from './usuarios/user.service';
+import {UserService} from './users/user.service';
 import {NurseService} from './nurses/nurse.service';
 import {PatientService} from './patients/patient.service';
 import {RecordsService} from './records/records.service';
@@ -115,7 +114,7 @@ const appRoutes: Routes = [
     MatTooltipModule,
     NgxMaskModule.forRoot()
   ],
-  providers: [AuthGuard, AuthService, RegisterUserService,
+  providers: [AuthGuard, AuthService,
     NurseService, UserService, PatientService, Globals,
     CookieService, AppService, RecordsService],
   bootstrap: [AppComponent]

@@ -7,7 +7,7 @@ import {CookieService} from 'ngx-cookie-service';
 import {Globals} from './globals';
 
 import {User} from './models/user.model';
-import {UserService} from './usuarios/user.service';
+import {UserService} from './users/user.service';
 import {AuthService} from './auth/auth.service';
 
 

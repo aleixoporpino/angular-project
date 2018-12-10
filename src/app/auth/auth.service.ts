@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
 import {User} from '../models/user.model';
-import {UserService} from '../usuarios/user.service';
+import {UserService} from '../users/user.service';
 import {CookieService} from 'ngx-cookie-service';
 
 @Injectable()

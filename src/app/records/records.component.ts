@@ -4,9 +4,9 @@ import {CrudOperation} from '../enums/crudOperation';
 import {Record} from '../models/record.model';
 
 import {RecordsService} from './records.service';
-import {UserService} from '../usuarios/user.service';
+import {UserService} from '../users/user.service';
+import {NurseService} from '../nurses/nurse.service';
 import {User} from '../models/user.model';
-import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-records',
@@ -25,9 +25,9 @@ export class RecordsComponent implements OnInit {
 
   alertMessage: String = '';
   boAlertMessage = false;
-  serializedDate: FormControl;
 
-  constructor(private recordService: RecordsService, private userService: UserService) {
+  constructor(private recordService: RecordsService, private userService: UserService,
+              private nurseService: NurseService) {
   }
 
   ngOnInit() {
@@ -42,7 +42,7 @@ export class RecordsComponent implements OnInit {
   }
 
   listNurses() {
-    this.userService.findAllNurses().subscribe(nurses => {
+    this.nurseService.findAll().subscribe(nurses => {
       this.nurses = nurses;
     });
   }

@@ -12,6 +12,7 @@ import 'rxjs/add/observable/throw';
 
 import {User} from '../models/user.model';
 import {Patient} from '../models/patient.model';
+import {HttpReturnMessage} from '../models/httpreturnmessage.model';
 
 @Injectable()
 export class UserService {
@@ -48,13 +49,14 @@ export class UserService {
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }
 
-  findAllNurses(): Observable<Array<User>> {
+  public save(user: User): Observable<HttpReturnMessage> {
     const headers = new HttpHeaders({
-      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+      'Authorization': 'Bearer ' + this.cookieService.get('access_token')
     });
 
-    return this.httpClient.get(this.URL + '/nurses', {headers: headers})
+    return this.httpClient.post(this.URL + '/', user, {headers: headers})
       .map((res: Response) => res)
-      .catch((error: any) => Observable.throw(error || 'Server error'));
+      .catch((error: any) => Observable.throw(alert('Error, contact the system administrator.') || error));
+
   }
 }

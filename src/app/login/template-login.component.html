@@ -1,4 +1,4 @@
-<div class="container" *ngIf="!isCadastrando">
+<div class="container" *ngIf="!adding">
   <br/>
   <div style="text-align:center">
     <img style="text-align:center" src="../assets/images/hospital.png" width="100px" height="100px">
@@ -29,68 +29,120 @@
       </button>
 
       <button mat-raised-button color="success" type="button"
-              (click)="novoUsuarioForm()">Register
+              (click)="newUserForm()">Register
       </button>
     </p>
   </mat-card>
 </div>
-
-<form #formUser="ngForm" *ngIf="isCadastrando"
+<br/>
+<br/>
+<br/>
+<form #formUser="ngForm" *ngIf="adding"
       (ngSubmit)="saveUser(newUser)">
-
   <mat-card>
-    <h2>Register</h2>
-    <br/>
-    <br/>
+    <mat-card-header>
+      <h3>Register</h3>
+    </mat-card-header>
     <mat-card-content>
-      <table class="fullwidth" style="cellspacing:0">
-        <tr>
-          <td>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Name" id="name" [(ngModel)]="newUser.name"
+                     name="name"
+                     required maxlength="50" #name="ngModel">
+              <div *ngIf="name.invalid && (name.dirty || name.touched)">
+                <mat-error *ngIf="name.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
             <mat-form-field class="fullwidth">
               <input matInput id="login" placeholder="Login" name="login" required minlength="6" maxlength="20"
                      [(ngModel)]="newUser.login" #login="ngModel" type="text"
               >
+              <div *ngIf="login.invalid && (login.dirty || login.touched)">
+                <mat-error *ngIf="login.errors.required"></mat-error>
+                <mat-error *ngIf="login.errors.minlength">Login must have at least 6 length.
+                </mat-error>
+              </div>
             </mat-form-field>
-            <div *ngIf="login.invalid && (login.dirty || login.touched)">
-              <mat-error *ngIf="login.errors.required">Login is required.</mat-error>
-              <mat-error *ngIf="login.errors.minlength">Login must have at least 6 length.
-              </mat-error>
-            </div>
-          </td>
-          <td>
+          </div>
+          <div class="col-md-3">
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Password" id="pass" [(ngModel)]="newUser.password" type="password"
                      name="pass"
                      minlength="5" maxlength="50" required #pass="ngModel">
+              <div *ngIf="pass.invalid && (pass.dirty || pass.touched)">
+                <mat-error *ngIf="pass.errors.required"></mat-error>
+                <mat-error *ngIf="pass.errors.minlength">Password must have at least 6 length.</mat-error>
+              </div>
             </mat-form-field>
-            <div *ngIf="pass.invalid && (pass.dirty || pass.touched)">
-              <mat-error *ngIf="pass.errors.required">Password is required.</mat-error>
-              <mat-error *ngIf="pass.errors.minlength">Password must have at least 6 length.</mat-error>
-            </div>
-          </td>
-
-        </tr>
-      </table>
-
-      <mat-form-field class="fullwidth">
-        <input matInput placeholder="E-mail" id="email" [(ngModel)]="newUser.email" name="email" maxlength="100"
-               #email="ngModel" required/>
-      </mat-form-field>
-      <div *ngIf="email.invalid && (email.dirty || email.touched)">
-        <mat-error *ngIf="email.errors.required">E-mail is required.</mat-error>
-        <mat-error *ngIf="email.errors.email">Invalid e-mail.</mat-error>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Beep" id="beep" [(ngModel)]="newUser.beep" name="beep"
+                     [disabled]="crudOperation === 'VIEWING'" required
+                     #beep="ngModel" maxlength="10">
+              <div *ngIf="beep.invalid && (beep.dirty || beep.touched)">
+                <mat-error *ngIf="beep.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-5">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Department" id="department"
+                     [(ngModel)]="newUser.department" type="text"
+                     name="department" [disabled]="crudOperation === 'VIEWING'"
+                     maxlength="200" required #department="ngModel">
+              <div *ngIf="department.invalid && (department.dirty || department.touched)">
+                <mat-error *ngIf="department.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="col-md-5">
+            <mat-form-field class="fullwidth">
+              <input matInput placeholder="Cellphone" mask="(000) 000-0000" id="cellphone"
+                     [dropSpecialCharacters]="true"
+                     [(ngModel)]="newUser.cellphone"
+                     name="cellphone" [disabled]="crudOperation === 'VIEWING'"
+                     maxlength="18" required #cellphone="ngModel">
+              <div *ngIf="cellphone.invalid && (cellphone.dirty || cellphone.touched)">
+                <mat-error *ngIf="cellphone.errors.required"></mat-error>
+              </div>
+            </mat-form-field>
+          </div>
+        </div>
       </div>
 
-      <div class="panel-footer">
+      <div class="row">
+        <div class="col-md-12">
+          <mat-form-field class="fullwidth">
+            <input matInput placeholder="E-mail" id="email" [(ngModel)]="newUser.email" name="email"
+                   [disabled]="crudOperation === 'VIEWING'" required
+                   #email="ngModel" maxlength="200">
+
+            <div *ngIf="email.invalid && (email.dirty || email.touched)">
+              <mat-error *ngIf="email.errors.required"></mat-error>
+              <mat-error *ngIf="email.errors.email">Invalid e-mail.</mat-error>
+            </div>
+          </mat-form-field>
+        </div>
+      </div>
+
+    </mat-card-content>
+    <mat-card-footer>
+      <div class="btn-footer">
         <button mat-raised-button color="primary" type="submit"
-                [disabled]="!formUser.form.valid">
+                [disabled]="!formUser.form.valid" (click)="saveUser(newUser)">
           Save
-          <i class="fa fa-save"></i>
         </button>
         <button mat-raised-button type="button"
-                (click)=cancelarCadastroUsuario()>Back
+                (click)=cancelUserForm()>Back
         </button>
       </div>
-    </mat-card-content>
+    </mat-card-footer>
   </mat-card>
 </form>

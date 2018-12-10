@@ -5,7 +5,7 @@ import {CookieService} from 'ngx-cookie-service';
 import {Patient} from '../models/patient.model';
 import {User} from '../models/user.model';
 import {CrudOperation} from '../enums/crudOperation';
-import {UserService} from '../usuarios/user.service';
+import {UserService} from '../users/user.service';
 import {AppService} from '../app.service';
 import {PatientService} from './patient.service';
 

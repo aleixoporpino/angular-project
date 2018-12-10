@@ -1,9 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from '../models/user.model';
 import {AuthService} from '../auth/auth.service';
-import {RegisterUserService} from '../usuarios/register-user.service';
-import {FormControl, FormGroup, FormGroupDirective, NgForm, Validators} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {UserService} from '../users/user.service';
 
 
 @Component({
@@ -15,19 +13,19 @@ export class TemplateLoginComponent implements OnInit {
   alertMessage: String = '';
   boAlertMessage = false;
 
-  isCadastrando = false;
+  adding = false;
   newUser: User;
   public loginData = {username: '', password: ''};
 
-  constructor(private authService: AuthService, private registroUsuarioService: RegisterUserService) {
+  constructor(private authService: AuthService, private userService: UserService) {
   }
 
   ngOnInit() {
 
   }
 
-  novoUsuarioForm(user: User) {
-    this.isCadastrando = true;
+  newUserForm(user: User) {
+    this.adding = true;
     this.newUser = new User();
   }
 
@@ -35,26 +33,25 @@ export class TemplateLoginComponent implements OnInit {
     const user = new User();
     user.login = this.loginData.username;
     user.password = this.loginData.password;
-    console.log(user);
     this.authService.login(user);
   }
 
   saveUser(user: User): void {
-    this.registroUsuarioService
-      .salvar(user)
+    this.userService
+      .save(user)
       .subscribe((res) => {
         if (res.codigoErro === 0) {
           this.alertMessage = res.mensagem;
           this.boAlertMessage = true;
-          this.isCadastrando = false;
+          this.adding = false;
         } else if (res.codigoErro === 1) {
           alert(res.mensagem);
         }
       });
   }
 
-  cancelarCadastroUsuario() {
-    this.isCadastrando = false;
+  cancelUserForm() {
+    this.adding = false;
   }
 
 }
