@@ -1,22 +1,140 @@
-<form class="formWidth" #formRecord="ngForm" *ngIf="(records != null && records.length > 0) ||
-                                                    addingNewRecord.value">
+<form class="formWidth" #formRecord="ngForm">
   <mat-card>
     <mat-card-header>
       <mat-card-title><h3>Records</h3></mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <div *ngIf="boAlertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="dismissAlert()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        {{alertMessage}}
+      </div>
+      <table class="table table-condensed table-bordered table-striped table-hover"
+             *ngIf="crudOperation === 'LISTING' && records != null && records.length > 0">
+        <thead>
+        <tr>
+          <th scope="col" hidden>id</th>
+          <th scope="col">Date</th>
+          <th scope="col">Nurse</th>
+          <th scope="col">Type</th>
+          <th scope="col">Details</th>
+          <th scope="col">Category</th>
+          <th scope="col" style="text-align:center">#</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let rec of records">
+          <th scope="row" hidden>{{rec.id}}</th>
+          <td width="10%">{{rec.date | date:'medium'}}</td>
+          <td width="25%">{{rec.nurse != null ? rec.nurse.name : ''}}</td>
+          <td width="15%">{{rec.type}}</td>
+          <td width="15%">{{rec.details}}</td>
+          <td width="15%">{{rec.category}}</td>
+          <td class="text-center" style="max-width:18%;width:18%">
+            <button mat-icon-button color="default" (click)="viewRecordForm(rec)">
+              <span matTooltip="Details"><i class="fa fa-eye"></i></span>
+            </button>
+            <button mat-icon-button color="primary" (click)="editRecordForm(rec)">
+              <span matTooltip="Edit"><i class="fa fa-edit"></i></span>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteRecord(rec)">
+              <span matTooltip="Delete"><i class="fa fa-trash"></i></span>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="crudOperation === 'ADDING' || crudOperation === 'UPDATING' || crudOperation === 'VIEWING'">
+        <input id="id" type="hidden" [(ngModel)]="record.id" name="id"/>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-4">
+              <mat-form-field class="fullwidth">
+                <input matInput placeholder="Type" id="type" [(ngModel)]="record.type"
+                       name="type"
+                       [disabled]="crudOperation === 'VIEWING'"
+                       required maxlength="50" #type="ngModel">
+                <div *ngIf="type.invalid && (type.dirty || type.touched)">
+                  <mat-error *ngIf="type.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+            <div class="col-md-4">
+              <mat-form-field class="fullwidth">
+                <input matInput placeholder="Category" id="category" [(ngModel)]="record.category"
+                       name="category"
+                       [disabled]="crudOperation === 'VIEWING'"
+                       required maxlength="50" #category="ngModel">
+                <div *ngIf="category.invalid && (category.dirty || category.touched)">
+                  <mat-error *ngIf="category.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+            <div class="col-md-4">
+              <mat-form-field class="fullwidth">
+                <input matInput placeholder="Details" id="details" [(ngModel)]="record.details"
+                       name="details"
+                       [disabled]="crudOperation === 'VIEWING'"
+                       required maxlength="50" #details="ngModel">
+                <div *ngIf="details.invalid && (details.dirty || details.touched)">
+                  <mat-error *ngIf="details.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-4">
+              <mat-form-field class="fullwidth">
+                <input matInput placeholder="Date" id="date" [(ngModel)]="record.date"
+                       name="date" type="text"
+                       [disabled]="crudOperation === 'VIEWING'"
+                       required #date="ngModel">
+                <div *ngIf="date.invalid && (date.dirty || date.touched)">
+                  <mat-error *ngIf="date.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+            <div class="col-md-8">
+              <mat-form-field class="fullwidth">
+                <mat-select id="recordNurse" placeholder="Nurse in charge" name="recordNurse"
+                            [disabled]="crudOperation === 'VIEWING'"
+                            [(ngModel)]="record.nurse.id" #recordNurse="ngModel">
+                  <mat-option *ngFor="let nurse of nurses" [value]="nurse.id">
+                    {{nurse.name}}
+                  </mat-option>
+                </mat-select>
+                <div *ngIf="recordNurse.invalid && (recordNurse.dirty || recordNurse.touched)">
+                  <mat-error *ngIf="recordNurse.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </mat-card-content>
-    <mat-card-footer *ngIf="addingNewRecord.value">
-      <div class="panel-footer">
-        <p>
-          <button type="button" mat-raised-button color="primary" (click)="saveRecord(formRecord.value)"
-                  [disabled]="!formRecord.form.valid">
-            Save
-          </button>
-          <button mat-raised-button (click)="cancelFormRecord()">
-            Cancel
-          </button>
-        </p>
+    <mat-card-footer>
+      <div class="btn-footer">
+        <button type="button" mat-raised-button color="primary" (click)="saveRecord(record)"
+                [disabled]="!formRecord.form.valid" *ngIf="crudOperation === 'ADDING' ||
+                         crudOperation === 'UPDATING'">
+          Save record
+        </button>
+        <button type="button" mat-raised-button color="primary" (click)="newRecordForm()"
+                *ngIf="crudOperation === 'LISTING'">
+          Add new record
+        </button>
+        <button mat-raised-button (click)="cancelFormRecord()"
+                *ngIf="crudOperation === 'ADDING' ||
+                         crudOperation === 'UPDATING' ||
+                         crudOperation === 'VIEWING'">
+          Cancel
+        </button>
       </div>
     </mat-card-footer>
   </mat-card>

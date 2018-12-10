@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {CookieService} from 'ngx-cookie-service';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import {Patient} from '../models/patient.model';
 import {User} from '../models/user.model';
@@ -23,9 +22,8 @@ export class PatientsComponent implements OnInit {
 
   alertMessage: String = '';
   boAlertMessage = false;
-  addingNewRecord: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  operacao: CrudOperation = CrudOperation.LISTING;
+  crudOperation: CrudOperation = CrudOperation.LISTING;
 
   patient: Patient = new Patient();
 
@@ -73,32 +71,32 @@ export class PatientsComponent implements OnInit {
       this.patient = new Patient();
       this.patient.doctor = new User();
     }
-    this.operacao = CrudOperation.ADDING;
+    this.crudOperation = CrudOperation.ADDING;
   }
 
   editPatientForm(patient: Patient) {
     if (!patient) {
-      this.operacao = CrudOperation.LISTING;
+      this.crudOperation = CrudOperation.LISTING;
       return;
     }
-    this.operacao = CrudOperation.UPDATING;
+    this.crudOperation = CrudOperation.UPDATING;
     this.patient = new Patient();
     this.patient = patient;
   }
 
   viewPatientForm(patient: Patient) {
-    this.operacao = CrudOperation.VIEWING;
+    this.crudOperation = CrudOperation.VIEWING;
     this.patient = patient;
   }
 
   savePatient(patient: Patient) {
-    if (this.operacao === CrudOperation.ADDING) {
+    if (this.crudOperation === CrudOperation.ADDING) {
       this.patientService
         .save(patient)
         .subscribe((res) => {
           if (res.codigoErro === 0) {
             this.listPatients();
-            this.operacao = CrudOperation.LISTING;
+            this.crudOperation = CrudOperation.LISTING;
             this.patient = patient;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
@@ -112,7 +110,7 @@ export class PatientsComponent implements OnInit {
         .subscribe((res) => {
           if (res.codigoErro === 0) {
             this.listPatients();
-            this.operacao = CrudOperation.LISTING;
+            this.crudOperation = CrudOperation.LISTING;
             this.patient = patient;
             this.boAlertMessage = true;
             this.alertMessage = res.mensagem;
@@ -130,7 +128,7 @@ export class PatientsComponent implements OnInit {
       .subscribe((res) => {
         if (res.codigoErro === 0) {
           this.listPatients();
-          this.operacao = CrudOperation.LISTING;
+          this.crudOperation = CrudOperation.LISTING;
           this.boAlertMessage = true;
           this.alertMessage = res.mensagem;
         } else {
@@ -140,15 +138,12 @@ export class PatientsComponent implements OnInit {
 
   }
 
-  addNewRecord() {
-    console.log('here i am');
-    this.addingNewRecord.next(true);
-  }
-
   cancelFormPatient() {
-    this.operacao = CrudOperation.LISTING;
+    this.crudOperation = CrudOperation.LISTING;
     this.listPatients();
-    this.addingNewRecord.next(false);
   }
 
+  dismissAlert() {
+    this.boAlertMessage = false;
+  }
 }

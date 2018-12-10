@@ -29,7 +29,6 @@ export class UserService {
   }
 
   public login(login: string, password: string): Observable<User> {
-    console.log(this.cookieService.get('access_token'));
     const headers = new HttpHeaders({
       'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
     });
@@ -40,7 +39,6 @@ export class UserService {
   }
 
   public findAllDoctors(): Observable<Array<User>> {
-    console.log(this.cookieService.get('access_token'));
     const headers = new HttpHeaders({
       'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
     });
@@ -50,4 +48,13 @@ export class UserService {
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }
 
+  findAllNurses(): Observable<Array<User>> {
+    const headers = new HttpHeaders({
+      'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+    });
+
+    return this.httpClient.get(this.URL + '/nurses', {headers: headers})
+      .map((res: Response) => res)
+      .catch((error: any) => Observable.throw(error || 'Server error'));
+  }
 }

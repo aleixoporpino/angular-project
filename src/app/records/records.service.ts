@@ -59,7 +59,7 @@ export class RecordsService {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.cookieService.get('access_token')
     });
-    return this.httpClient.put(this.URL, record, {headers: headers})
+    return this.httpClient.put(this.URL + '/', record, {headers: headers})
       .map((res: Response) => res)
       .catch((error: any) => Observable.throw(alert('Error, contact the system administrator.') || error));
   }

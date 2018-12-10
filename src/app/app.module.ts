@@ -1,13 +1,10 @@
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service';
 import {NgxMaskModule} from 'ngx-mask';
-// import 'hammerjs';
-
 import {AppComponent} from './app.component';
 import {AuthGuard} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
@@ -47,15 +44,16 @@ import {
   MatSlideToggleModule,
   MatSnackBarModule,
   MatSortModule,
+  MatStepperModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
-  MatStepperModule,
 } from '@angular/material';
 import {CdkTableModule} from '@angular/cdk/table';
 import {PatientsComponent} from './patients/patients.component';
 import {RecordsComponent} from './records/records.component';
+// import 'hammerjs';
 
 
 const appRoutes: Routes = [

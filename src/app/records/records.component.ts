@@ -4,8 +4,8 @@ import {CrudOperation} from '../enums/crudOperation';
 import {Record} from '../models/record.model';
 
 import {RecordsService} from './records.service';
+import {UserService} from '../usuarios/user.service';
 import {User} from '../models/user.model';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Component({
   selector: 'app-records',
@@ -14,21 +14,23 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 })
 export class RecordsComponent implements OnInit {
   @Input() patient: Patient;
-  @Input() addingNewRecord: BehaviorSubject<boolean>;
 
   crudOperation: CrudOperation = CrudOperation.LISTING;
 
   records: Record[] = [];
   record: Record = new Record();
 
+  nurses: User[] = [];
+
   alertMessage: String = '';
   boAlertMessage = false;
 
-  constructor(private recordService: RecordsService) {
+  constructor(private recordService: RecordsService, private userService: UserService) {
   }
 
   ngOnInit() {
     this.listRecords();
+    this.listNurses();
   }
 
   listRecords() {
@@ -37,15 +39,17 @@ export class RecordsComponent implements OnInit {
     });
   }
 
+  listNurses() {
+    this.userService.findAllNurses().subscribe(nurses => {
+      this.nurses = nurses;
+    });
+  }
+
   newRecordForm() {
-    // Reseta o form se for editado um contato
-    if (this.records.length) {
-      this.record = new Record();
-      this.record.nurse = new User();
-      this.record.patient = this.patient;
-    }
+    this.record = new Record();
+    this.record.nurse = new User();
+    this.record.patient = this.patient;
     this.crudOperation = CrudOperation.ADDING;
-    this.addingNewRecord.next(false);
   }
 
   editRecordForm(record: Record) {
@@ -55,18 +59,25 @@ export class RecordsComponent implements OnInit {
     }
     this.crudOperation = CrudOperation.UPDATING;
     this.record = new Record();
+    if (record.nurse == null) {
+      record.nurse = new User();
+    }
+    record.date = new Date(record.date);
     this.record = record;
-    this.addingNewRecord.next(false);
+
   }
 
   viewRecordForm(record: Record) {
     this.crudOperation = CrudOperation.VIEWING;
+    if (record.nurse == null) {
+      record.nurse = new User();
+    }
     this.record = record;
-    this.addingNewRecord.next(false);
   }
 
   saveRecord(record: Record) {
     if (this.crudOperation === CrudOperation.ADDING) {
+      record.patient = this.patient;
       this.recordService
         .save(record)
         .subscribe((res) => {
@@ -97,7 +108,7 @@ export class RecordsComponent implements OnInit {
 
   }
 
-  deletePatient(record: Record) {
+  deleteRecord(record: Record) {
     this.recordService
       .delete(record)
       .subscribe((res) => {
@@ -115,8 +126,10 @@ export class RecordsComponent implements OnInit {
 
   cancelFormRecord() {
     this.crudOperation = CrudOperation.LISTING;
-    this.addingNewRecord.next(false);
     this.listRecords();
   }
 
+  dismissAlert() {
+    this.boAlertMessage = false;
+  }
 }
