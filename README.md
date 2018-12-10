@@ -1,13 +1,11 @@
-# AgendaContato-Client
-Baixe o [Node.js](https://nodejs.org/dist/v8.9.4/node-v8.9.4-x64.msi)
+# Angular project
+Download [Node.js](https://nodejs.org/dist/v8.9.4/node-v8.9.4-x64.msi)
 
-Baixe o angular[Angular CLI](https://github.com/angular/angular-cli) version 1.6.5.
+Download angular[Angular CLI](https://github.com/angular/angular-cli) version 1.6.5.
 
 ## Development server
 
-Abra o prompt de comando e digite cd (pasta do projeto)
-
-Ainda no prompt digite `ng serve`
+Open cmd or terminal and type ng serve
 
 ## Build
 
