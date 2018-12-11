@@ -1,58 +1,43 @@
 import {Component, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {CookieService} from 'ngx-cookie-service';
 
 import {Patient} from '../models/patient.model';
 import {User} from '../models/user.model';
 import {CrudOperation} from '../enums/crudOperation';
 import {UserService} from '../users/user.service';
-import {AppService} from '../app.service';
 import {PatientService} from './patient.service';
+import {CrudManager} from '../utils/crud.manager';
+import {AppService} from '../app.service';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-patients',
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.css']
 })
-export class PatientsComponent implements OnInit {
+export class PatientsComponent extends CrudManager implements OnInit {
   patients: Patient[] = [];
   doctors: User[] = [];
 
   searchName: String = '';
 
-  alertMessage: String = '';
-  boAlertMessage = false;
-
-  crudOperation: CrudOperation = CrudOperation.LISTING;
-
   patient: Patient = new Patient();
 
   constructor(private patientService: PatientService, private userService: UserService,
-              private appService: AppService,
-              private cookieService: CookieService, public dialog: MatDialog) {
+              private appService: AppService, private cookieService: CookieService) {
+    super();
   }
 
-  ngOnAfterViewInit() {
-    this.listPatients();
-    this.listAllDoctors();
-  }
-
-  ngOnInit() {
+  initial() {
     this.appService.checkCredentials();
-    this.listPatients();
-    this.listAllDoctors();
-  }
-
-  listPatients() {
-    this.patientService.findDoctorId().subscribe(patients => {
-      this.patients = patients;
-    });
-  }
-
-  listAllDoctors() {
     this.userService.findAllDoctors().subscribe(doctors => {
       this.doctors = doctors;
     });
+    this.listEntities();
+  }
+
+  ngOnInit() {
+    this.posConstructor();
+    console.log(this.crudOperation.value);
   }
 
   findPatientByName(searchName: string) {
@@ -61,92 +46,78 @@ export class PatientsComponent implements OnInit {
         this.patients = patients;
       });
     } else {
-      this.listPatients();
+      this.listEntities();
     }
   }
 
-  newPatientForm(contato: Patient) {
-    // Reseta o form se for editado um contato
-    this.boAlertMessage = false;
-    if (this.patients.length) {
-      this.patient = new Patient();
-      this.patient.doctor = new User();
-    }
-    this.crudOperation = CrudOperation.ADDING;
+  cancelOperation() {
+    this.listEntities();
   }
 
-  editPatientForm(patient: Patient) {
-    this.boAlertMessage = false;
-    if (!patient) {
-      this.crudOperation = CrudOperation.LISTING;
-      return;
-    }
-    this.crudOperation = CrudOperation.UPDATING;
+
+  listEntities() {
+    this.patientService.findDoctorId().subscribe(patients => {
+      this.patients = patients;
+      console.log(this.patients);
+    });
+  }
+
+  newRegister() {
     this.patient = new Patient();
-    this.patient = patient;
+    this.patient.doctor = new User();
   }
 
-  viewPatientForm(patient: Patient) {
-    this.boAlertMessage = false;
-    this.crudOperation = CrudOperation.VIEWING;
-    this.patient = patient;
+  viewRegister(obj: any) {
+    this.patient = obj as Patient;
   }
 
-  savePatient(patient: Patient) {
-    if (this.crudOperation === CrudOperation.ADDING) {
-      this.patientService
-        .save(patient)
-        .subscribe((res) => {
-          if (res.codigoErro === 0) {
-            this.listPatients();
-            this.crudOperation = CrudOperation.LISTING;
-            this.patient = patient;
-            this.boAlertMessage = true;
-            this.alertMessage = res.mensagem;
-          } else {
-            alert(res.mensagem);
-          }
-        });
-    } else {
-      this.patientService
-        .update(patient)
-        .subscribe((res) => {
-          if (res.codigoErro === 0) {
-            this.listPatients();
-            this.crudOperation = CrudOperation.LISTING;
-            this.patient = patient;
-            this.boAlertMessage = true;
-            this.alertMessage = res.mensagem;
-          } else {
-            alert(res.mensagem);
-          }
-        });
-    }
-
+  editRegister(obj: any) {
+    this.patient = obj as Patient;
+    console.log(this.patient);
   }
 
-  deletePatient(patient: Patient) {
-    this.patientService
-      .delete(patient)
-      .subscribe((res) => {
-        if (res.codigoErro === 0) {
-          this.listPatients();
-          this.crudOperation = CrudOperation.LISTING;
-          this.boAlertMessage = true;
-          this.alertMessage = res.mensagem;
-        } else {
-          alert(res.mensagem);
-        }
+  saveRegister() {
+    if (this.crudOperation.value === CrudOperation.ADDING) {
+      return new Promise(resolve => {
+        console.log(this.patient);
+        this.patientService
+          .save(this.patient)
+          .subscribe((res) => {
+            if (res.codigoErro !== 0) {
+              this.validatonError = true;
+            }
+            resolve();
+          });
       });
-
+    } else {
+      return new Promise(resolve => {
+        this.patientService
+          .update(this.patient)
+          .subscribe((res) => {
+            if (res.codigoErro !== 0) {
+              this.validatonError = true;
+            }
+            resolve();
+          });
+      });
+    }
   }
 
-  cancelFormPatient() {
-    this.crudOperation = CrudOperation.LISTING;
-    this.listPatients();
+  deleteRegister(obj: any) {
+    return new Promise(resolve => {
+      this.patientService
+        .delete(obj as Patient)
+        .subscribe((res) => {
+          if (res.codigoErro !== 0) {
+            this.validatonError = true;
+            alert(res.mensagem);
+          }
+          resolve();
+        });
+    });
   }
 
-  dismissAlert() {
-    this.boAlertMessage = false;
-  }
+}
+
+class PatientsComponentImpl extends PatientsComponent {
 }

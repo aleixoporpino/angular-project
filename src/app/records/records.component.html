@@ -30,7 +30,7 @@
           <td width="25%">{{rec.nurse != null ? rec.nurse.name : ''}}</td>
           <td width="15%">{{rec.type}}</td>
           <td width="15%">{{rec.details}}</td>
-          <td width="15%">{{rec.category}}</td>
+          <td width="15%">{{rec.department}}</td>
           <td class="text-center" style="max-width:18%;width:18%">
             <button mat-icon-button color="default" (click)="viewRecordForm(rec)">
               <span matTooltip="Details"><i class="fa fa-eye"></i></span>
@@ -63,7 +63,7 @@
             </div>
             <div class="col-md-4">
               <mat-form-field class="fullwidth">
-                <input matInput placeholder="Category" id="category" [(ngModel)]="record.category"
+                <input matInput placeholder="Category" id="category" [(ngModel)]="record.department"
                        name="category"
                        [disabled]="crudOperation === 'VIEWING'"
                        required maxlength="50" #category="ngModel">
@@ -100,7 +100,7 @@
                 </div>
               </mat-form-field>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
               <mat-form-field class="fullwidth">
                 <mat-select id="recordNurse" placeholder="Nurse in charge" name="recordNurse"
                             [disabled]="crudOperation === 'VIEWING'"
@@ -111,6 +111,21 @@
                 </mat-select>
                 <div *ngIf="recordNurse.invalid && (recordNurse.dirty || recordNurse.touched)">
                   <mat-error *ngIf="recordNurse.errors.required"></mat-error>
+                </div>
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+              <mat-form-field class="fullwidth">
+                <mat-select id="status" placeholder="Status" required name="status"
+                            [disabled]="crudOperation === 'VIEWING'"
+                            [(ngModel)]="record.status" #status="ngModel">
+                  <mat-option value="NORMAL">Normal</mat-option>
+                  <mat-option value="STABLE">Stable</mat-option>
+                  <mat-option value="UNSTABLE">Unstable</mat-option>
+                  <mat-option value="CRITICAL">CRITICAL</mat-option>
+                </mat-select>
+                <div *ngIf="status.invalid && (status.dirty || status.touched)">
+                  <mat-error *ngIf="status.errors.required"></mat-error>
                 </div>
               </mat-form-field>
             </div>

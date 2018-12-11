@@ -27,15 +27,14 @@
     </button>
   </form>
 </nav>
-
 <br/>
 <div *ngIf="boAlertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+  {{alertMessage}}
   <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="dismissAlert()">
     <span aria-hidden="true">&times;</span>
   </button>
-  {{alertMessage}}
 </div>
-<mat-card *ngIf="crudOperation === 'LISTING'">
+<mat-card *ngIf="crudOperation.value === 'LISTING'">
   <div class="container">
     <mat-card-header>
       <mat-card-title>
@@ -75,13 +74,13 @@
               <label style="display: block">Room number: {{patient.roomNumber}}</label>
             </mat-card-content>
             <mat-card-actions style="padding-bottom: 10px" class="list-card-buttons">
-              <button type="button" mat-raised-button color="default" (click)="viewPatientForm(patient)">
+              <button type="button" mat-raised-button color="default" (click)="view(patient)">
                 Details
               </button>
-              <button type="button" mat-raised-button color="primary" (click)="editPatientForm(patient)">
+              <button type="button" mat-raised-button color="primary" (click)="edit(patient)">
                 Edit
               </button>
-              <button type="button" mat-raised-button color="warn" (click)="deletePatient(patient)">
+              <button type="button" mat-raised-button color="warn" (click)="delete(patient)">
                 Delete
               </button>
             </mat-card-actions>
@@ -108,17 +107,17 @@
           <td>{{patient.doctor.name}}</td>
           <td>{{patient.roomNumber}}</td>
           <td class="text-center" style="max-width:14%;width:14%">
-            <button mat-icon-button color="default" (click)="viewPatientForm(patient)">
+            <button mat-icon-button color="default" (click)="view(patient)">
               <mat-icon>
                 <span matTooltip="Details"><i class="fa fa-eye"></i></span>
               </mat-icon>
             </button>
-            <button mat-icon-button color="primary" (click)="editPatientForm(patient)">
+            <button mat-icon-button color="primary" (click)="edit(patient)">
               <mat-icon>
                 <span matTooltip="Edit"><i class="fa fa-edit"></i></span>
               </mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="deletePatient(patient)">
+            <button mat-icon-button color="warn" (click)="delete(patient)">
               <mat-icon>
                 <span matTooltip="Delete"><i class="fa fa-trash"></i></span>
               </mat-icon>
@@ -130,7 +129,7 @@
     </mat-card-content>
     <mat-card-footer>
       <div class="btn-footer">
-        <button mat-raised-button color="primary" (click)="newPatientForm()">
+        <button mat-raised-button color="primary" (click)="new()">
           New patient
           <i class="fa fa-plus"></i>
         </button>
@@ -140,7 +139,7 @@
 </mat-card>
 
 <form class="formWidth" #formPatient="ngForm"
-      *ngIf="crudOperation === 'ADDING' || crudOperation === 'VIEWING' || crudOperation === 'UPDATING'">
+      *ngIf="crudOperation.value === 'ADDING' || crudOperation.value === 'VIEWING' || crudOperation.value === 'UPDATING'">
   <mat-card>
     <mat-card-header>
       <mat-card-title><h3>Patient</h3></mat-card-title>
@@ -153,7 +152,7 @@
             <mat-form-field class="fullwidth">
               <input matInput placeholder="First name" id="firstName" [(ngModel)]="patient.firstName"
                      name="firstName"
-                     [disabled]="crudOperation === 'VIEWING'"
+                     [disabled]="crudOperation.value === 'VIEWING'"
                      required maxlength="50" #firstName="ngModel">
               <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)">
                 <mat-error *ngIf="firstName.errors.required"></mat-error>
@@ -163,7 +162,7 @@
           <div class="col-md-4">
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Last name" id="lastName" [(ngModel)]="patient.lastName" name="lastName"
-                     [disabled]="crudOperation === 'VIEWING'" required
+                     [disabled]="crudOperation.value === 'VIEWING'" required
                      #lastName="ngModel" maxlength="50">
 
               <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
@@ -174,7 +173,7 @@
           <div class="col-md-2">
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Age" id="age" [(ngModel)]="patient.age" name="age"
-                     [disabled]="crudOperation === 'VIEWING'" required type="number"
+                     [disabled]="crudOperation.value === 'VIEWING'" required type="number"
                      #age="ngModel" maxlength="3">
 
               <div *ngIf="age.invalid && (age.dirty || age.touched)">
@@ -185,7 +184,7 @@
           <div class="col-md-2">
             <mat-form-field class="fullwidth">
               <mat-select id="gender" placeholder="Gender" required name="gender"
-                          [disabled]="crudOperation === 'VIEWING'"
+                          [disabled]="crudOperation.value === 'VIEWING'"
                           [(ngModel)]="patient.gender" #gender="ngModel">
                 <mat-option value="FEMALE">FEMALE</mat-option>
                 <mat-option value="MALE">MALE</mat-option>
@@ -200,7 +199,7 @@
           <div class="col-md-12">
             <mat-form-field class="fullwidth">
               <textarea matInput placeholder="Address" id="address" [(ngModel)]="patient.address" name="address"
-                        maxlength="200" [disabled]="crudOperation === 'VIEWING'" #address="ngModel"
+                        maxlength="200" [disabled]="crudOperation.value === 'VIEWING'" #address="ngModel"
                         required></textarea>
               <div *ngIf="address.invalid && (address.dirty || address.touched)">
                 <mat-error *ngIf="address.errors.required"></mat-error>
@@ -213,7 +212,7 @@
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Emergency number" mask="(000) 000-0000" id="emergencyNumber" [dropSpecialCharacters]="true"
                      [(ngModel)]="patient.emergencyNumber"
-                     name="emergencyNumber" [disabled]="crudOperation === 'VIEWING'"
+                     name="emergencyNumber" [disabled]="crudOperation.value === 'VIEWING'"
                      maxlength="12" required #emergencyNumber="ngModel">
               <div *ngIf="emergencyNumber.invalid && (emergencyNumber.dirty || emergencyNumber.touched)">
                 <mat-error *ngIf="emergencyNumber.errors.required"></mat-error>
@@ -223,7 +222,7 @@
           <div class="col-md-2">
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Room number" id="roomNumber" [(ngModel)]="patient.roomNumber"
-                     name="roomNumber" [disabled]="crudOperation === 'VIEWING' "
+                     name="roomNumber" [disabled]="crudOperation.value === 'VIEWING' "
                      maxlength="10" required #roomNumber="ngModel">
               <div *ngIf="roomNumber.invalid && (roomNumber.dirty || roomNumber.touched)">
                 <mat-error *ngIf="roomNumber.errors.required"></mat-error>
@@ -234,7 +233,7 @@
             <mat-form-field class="fullwidth">
               <input matInput placeholder="Department" id="department"
                      [(ngModel)]="patient.department" type="text"
-                     name="department" [disabled]="crudOperation === 'VIEWING'"
+                     name="department" [disabled]="crudOperation.value === 'VIEWING'"
                      maxlength="200" required #department="ngModel">
               <div *ngIf="department.invalid && (department.dirty || department.touched)">
                 <mat-error *ngIf="department.errors.required"></mat-error>
@@ -245,7 +244,7 @@
           <div class="col-md-4">
             <mat-form-field class="fullwidth">
               <mat-select id="doctor" placeholder="Doctor" required name="doctor"
-                          [disabled]="crudOperation === 'VIEWING'"
+                          [disabled]="crudOperation.value === 'VIEWING'"
                           [(ngModel)]="patient.doctor.id" #doctor="ngModel">
                 <mat-option *ngFor="let doc of doctors" [value]="doc.id">
                   {{doc.name}}
@@ -261,11 +260,11 @@
     </mat-card-content>
     <mat-card-footer>
       <div class="form-group btn-footer">
-        <button type="button" mat-raised-button color="primary" (click)="savePatient(formPatient.value)"
-                [disabled]="!formPatient.form.valid || crudOperation === 'VIEWING'">
+        <button type="button" mat-raised-button color="primary" (click)="save()"
+                [disabled]="!formPatient.form.valid || crudOperation.value === 'VIEWING'">
           Save
         </button>
-        <button mat-raised-button (click)="cancelFormPatient()">
+        <button mat-raised-button (click)="cancel()">
           Cancel
         </button>
       </div>
@@ -273,6 +272,6 @@
   </mat-card>
 </form>
 <br/>
-<app-records *ngIf="crudOperation === 'VIEWING' || crudOperation === 'UPDATING'" [patient]="patient">
+<app-records *ngIf="crudOperation.value === 'VIEWING' || crudOperation.value === 'UPDATING'" [patient]="patient">
 </app-records>
 

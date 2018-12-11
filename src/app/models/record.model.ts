@@ -8,5 +8,6 @@ export class Record {
   patient: Patient;
   type: string;
   details: number;
-  category: string;
+  department: string;
+  status: string;
 }
